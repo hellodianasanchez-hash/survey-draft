@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Wealth journey survey: team brief and survey preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#EEF2F4; --surface:#FFFFFF; --ink:#1B2430; --muted:#566273;
+    --line:#D3DAE1; --line-strong:#8A97A6; --accent:#2B5A84; --tint:#E4EDF5; --focus:#E8A93A;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--bg);color:var(--ink);font-family:'Atkinson Hyperlegible',system-ui,-apple-system,'Segoe UI',sans-serif;font-size:17px;line-height:1.5;-webkit-font-smoothing:antialiased}
+
+  .review-bar{max-width:640px;margin:0 auto;padding:12px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:14px;color:var(--muted)}
+  .review-bar button{font:inherit;font-size:14px;color:var(--accent);background:none;border:0;text-decoration:underline;cursor:pointer;padding:4px}
+
+  main{max-width:640px;margin:0 auto 48px;background:var(--surface);border:1px solid var(--line);border-radius:14px;min-height:560px;display:flex;flex-direction:column}
+  @media (max-width:660px){
+    main{border-radius:0;border-left:0;border-right:0;margin-bottom:0;min-height:calc(100vh - 46px)}
+  }
+
+  .progress{padding:20px 28px 0}
+  .progress[hidden]{display:none}
+  .progress-text{font-size:14px;color:var(--muted)}
+  .track{height:4px;background:var(--line);border-radius:2px;margin-top:8px;overflow:hidden}
+  .fill{height:100%;background:var(--accent);width:0;transition:width .3s ease}
+
+  .content{padding:28px;flex:1}
+  .content.enter{animation:enter .22s ease}
+  @keyframes enter{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+  h1{font-size:1.9rem;line-height:1.2;margin:8px 0 16px;letter-spacing:-.01em}
+  .lead{margin:0 0 14px;max-width:34em}
+  .meta{color:var(--muted);margin:20px 0 0}
+  .qtitle{font-size:1.4rem;line-height:1.3;font-weight:700;margin:0 0 8px;max-width:30em}
+  .hint{color:var(--muted);margin:0 0 20px}
+  .note{background:var(--tint);padding:12px 14px;border-radius:8px;margin:0 0 20px;font-size:.95rem}
+
+  fieldset{border:0;padding:0;margin:0;min-width:0}
+  .opts{display:flex;flex-direction:column;gap:8px}
+  .opt{position:relative;display:flex;gap:12px;align-items:flex-start;padding:13px 14px;border:1px solid var(--line);border-radius:10px;cursor:pointer;background:#fff;transition:border-color .12s,background .12s}
+  .opt:hover{border-color:#9FB0C2}
+  .opt input{position:absolute;opacity:0;width:1px;height:1px;margin:0}
+  .mark{flex:none;width:20px;height:20px;border:2px solid var(--line-strong);margin-top:2px;display:grid;place-items:center;background:#fff}
+  .mark.radio{border-radius:50%}
+  .mark.check{border-radius:5px}
+  .opt.on{border-color:var(--accent);background:var(--tint)}
+  .opt.on .mark{border-color:var(--accent);background:var(--accent)}
+  .opt.on .mark.radio::after{content:'';width:8px;height:8px;border-radius:50%;background:#fff}
+  .opt.on .mark.check::after{content:'';width:10px;height:5px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:translate(0,-1px) rotate(-45deg)}
+  .opt:has(input:focus-visible){outline:3px solid var(--focus);outline-offset:2px}
+  .opt:not(.optout) + .optout, .opt:not(.optout) + .other-wrap + .optout{margin-top:10px}
+  .other-wrap{padding:0 0 4px 46px}
+  .other-wrap[hidden]{display:none}
+  .text-in{width:100%;padding:10px 12px;border:1px solid var(--line-strong);border-radius:8px;font:inherit;color:var(--ink);background:#fff}
+  .text-in:focus-visible{outline:3px solid var(--focus);outline-offset:1px;border-color:var(--accent)}
+  textarea.text-in{min-height:150px;resize:vertical;line-height:1.5}
+  .counter{font-size:14px;color:var(--muted);text-align:right;margin-top:6px}
+
+  /* Paired statements: the one expressive element */
+  .pair{padding:20px 0 14px;border-top:1px solid var(--line)}
+  .pair:first-of-type{border-top:0;padding-top:4px}
+  .pair legend{font-size:.9rem;color:var(--muted);margin-bottom:10px;padding:0}
+  .ends{display:grid;grid-template-columns:1fr 1fr;gap:20px;font-weight:700;line-height:1.35}
+  .ends span:last-child{text-align:right}
+  .scale{position:relative;display:flex;justify-content:space-between;margin:10px -4px 0}
+  .scale::before{content:'';position:absolute;left:24px;right:24px;top:50%;height:2px;background:var(--line);transform:translateY(-50%)}
+  .dot{position:relative;width:48px;height:48px;display:grid;place-items:center;cursor:pointer}
+  .dot input{position:absolute;opacity:0;width:1px;height:1px;margin:0}
+  .dot span{width:18px;height:18px;border-radius:50%;border:2px solid var(--line-strong);background:#fff;transition:transform .15s ease,background .15s}
+  .dot:hover span{border-color:var(--accent)}
+  .dot input:checked + span{background:var(--accent);border-color:var(--accent);transform:scale(1.5)}
+  .dot input:focus-visible + span{outline:3px solid var(--focus);outline-offset:4px}
+  .scale.dim .dot span{opacity:.45}
+  .below{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;font-size:.85rem;color:var(--muted)}
+  .below .mid{text-align:center}
+  .dk{justify-self:end;background:none;border:1px solid transparent;border-radius:6px;color:var(--accent);font:inherit;font-size:.9rem;cursor:pointer;padding:6px 8px;text-decoration:underline}
+  .dk[aria-pressed="true"]{background:var(--tint);border-color:var(--accent);text-decoration:none;font-weight:700}
+  .dk:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+
+  .bottom-nav{display:flex;justify-content:space-between;gap:12px;padding:16px 28px 24px;border-top:1px solid var(--line)}
+  .bottom-nav[hidden]{display:none}
+  .btn{font:inherit;font-weight:700;padding:12px 22px;border-radius:10px;border:1px solid var(--accent);cursor:pointer;min-width:112px}
+  .btn.primary{background:var(--accent);color:#fff}
+  .btn.primary:disabled{background:#B7C3CF;border-color:#B7C3CF;cursor:not-allowed}
+  .btn.ghost{background:transparent;color:var(--accent)}
+  .btn.ghost[hidden]{visibility:hidden;display:inline-block}
+  .btn:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+  .start{margin-top:28px}
+
+  details{margin-top:28px;border-top:1px solid var(--line);padding-top:16px;font-size:.95rem}
+  summary{cursor:pointer;color:var(--accent)}
+  pre{background:#F4F6F8;border:1px solid var(--line);border-radius:8px;padding:12px;overflow:auto;font-size:13px;line-height:1.45}
+
+  @media (max-width:480px){
+    .content{padding:22px 20px}
+    .progress{padding:16px 20px 0}
+    .bottom-nav{padding:14px 20px 20px}
+    .qtitle{font-size:1.25rem}
+    .ends{gap:12px;font-size:.95rem}
+    .btn{min-width:96px;padding:12px 18px}
+  }
+
+  /* View switch */
+  .views{display:flex;gap:4px;background:#DDE4EA;border-radius:10px;padding:3px}
+  .views button{font:inherit;font-size:14px;font-weight:700;border:0;background:transparent;color:var(--muted);padding:7px 12px;border-radius:8px;cursor:pointer;text-decoration:none}
+  .views button[aria-pressed="true"]{background:#fff;color:var(--ink)}
+  .views button:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+  .bar-right{display:flex;align-items:center;gap:8px}
+  #restart[hidden]{display:none}
+
+  /* Team brief */
+  .brief{max-width:720px;margin:0 auto 64px;padding:8px 20px 0}
+  .brief[hidden]{display:none}
+  main[hidden]{display:none}
+  .brief .kicker{color:var(--muted);margin:24px 0 12px}
+  .brief .question{font-size:2.6rem;line-height:1.12;font-weight:700;letter-spacing:-.02em;margin:0 0 20px;max-width:16em}
+  .brief .sub{font-size:1.15rem;max-width:34em;margin:0 0 8px}
+  .brief section{border-top:2px solid var(--ink);margin-top:44px;padding-top:18px}
+  .brief h2{font-size:1.35rem;line-height:1.3;margin:0 0 12px}
+  .brief p{max-width:36em;margin:0 0 12px}
+  .brief ul{margin:0 0 12px;padding-left:1.2em;max-width:36em}
+  .brief li{margin-bottom:6px}
+  .hyp{background:var(--surface);border-left:4px solid var(--accent);padding:16px 20px;font-size:1.2rem;font-weight:700;line-height:1.35;margin:4px 0 20px;max-width:32em}
+  .tbl{width:100%;border-collapse:collapse;background:var(--surface);font-size:.95rem;margin:8px 0 12px}
+  .tbl th,.tbl td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+  .tbl th{font-size:.85rem;color:var(--muted);font-weight:700;background:#F6F8FA}
+  .tbl td:first-child{font-weight:700;white-space:nowrap}
+  .tbl-wrap{overflow-x:auto}
+  .surface-list{display:grid;gap:14px;margin:8px 0 0}
+  .surface-item{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+  .surface-item strong{display:block;margin-bottom:4px}
+  .surface-item span{color:var(--muted)}
+  .facts{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:8px 0 12px}
+  .facts div{background:var(--surface);padding:12px 14px;font-size:.95rem}
+  .facts b{display:block;font-size:1.15rem}
+  .try{margin-top:20px}
+  .small{font-size:.9rem;color:var(--muted)}
+  @media (max-width:600px){
+    .brief .question{font-size:2rem}
+    .facts{grid-template-columns:repeat(2,1fr)}
+    .tbl td:first-child{white-space:normal}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{transition:none!important;animation:none!important}
+  }
+
+  .review-bar label{display:flex;align-items:center;gap:6px}
+  .review-bar select{font:inherit;font-size:14px;padding:5px 8px;border:1px solid var(--line-strong);border-radius:6px;background:#fff;color:var(--ink)}
+  .review-bar select:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
+  .review-bar label[hidden]{display:none}
+  .flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:8px;margin:12px 0 16px}
+  .flow div{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:.95rem;flex:1 1 120px}
+  .flow div b{display:block}
+  .flow .split{border-color:var(--accent);background:var(--tint)}
+  .flow .arrow{flex:0 0 auto;border:0;background:none;padding:10px 0;color:var(--muted);align-self:center}
+  @media (max-width:600px){.flow .arrow{display:none}}
+
+  .below .optouts{justify-self:end;display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+  .pair.solo legend{position:absolute;left:-9999px}
+  .mrow{padding:16px 0 14px;border-top:1px solid var(--line)}
+  .mrow:first-of-type{border-top:0;padding-top:4px}
+  .mrow legend{font-weight:700;margin-bottom:10px;padding:0;line-height:1.35}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{position:relative;display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:#fff;cursor:pointer;font-size:.95rem;line-height:1.3}
+  .chip:hover{border-color:#9FB0C2}
+  .chip input{position:absolute;opacity:0;width:1px;height:1px;margin:0}
+  .chip.on{border-color:var(--accent);background:var(--tint);font-weight:700}
+  .chip.optout{border-style:dashed}
+  .chip:has(input:focus-visible){outline:3px solid var(--focus);outline-offset:2px}
+  .tbl td.wrap{white-space:normal}
+</style>
+</head>
+<body>
+
+<div class="review-bar">
+  <div class="views" role="group" aria-label="View">
+    <button type="button" id="vBrief" aria-pressed="true">Team brief</button>
+    <button type="button" id="vSurvey" aria-pressed="false">Try the survey</button>
+  </div>
+  <div class="bar-right">
+    <label id="modWrap" hidden>Module
+      <select id="modSel">
+        <option value="random">Random</option>
+        <option value="L">L: Long term and readiness</option>
+        <option value="R">R: Relationship and AI</option>
+      </select>
+    </label>
+    <button type="button" id="restart" hidden>Start over</button>
+  </div>
+</div>
+
+<article class="brief" id="brief">
+  <p class="kicker">Wealth journey survey, team brief. Input to Aura Phase 1, October 2026.</p>
+  <h1 class="question">What does the wealth management journey look like for people today?</h1>
+  <p class="sub">Regardless of who they turn to: a bank, an AI assistant, an adviser, or services like Nordnet and Revolut.</p>
+
+  <section>
+    <h2>Why we are asking</h2>
+    <p>OP&rsquo;s 2028 vision describes a coaching-led journey, but we know little about how people actually move through it today. What we do know is that it doesn&rsquo;t happen in one place:</p>
+    <ul>
+      <li>28% of customers already invest with another provider (Inspiration deck, August 2026).</li>
+      <li>Customers already use public AI tools to support investment decisions (Wealth &amp; AI Tribe alignment, September 2026).</li>
+      <li>Customers in the same tier describe the same advice as excellent or as basic, and some miss being contacted (Customer Experience Review H1 2026).</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>What we want to learn at each step</h2>
+    <p>The steps follow the Accenture journey, which lines up with OP&rsquo;s 2028 vision. For each step, people tell us who or what they used in the past year, wherever that help came from, and why. Everyone also tells us where they would most like more help.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Step</th><th>What we want to learn</th></tr></thead>
+      <tbody>
+        <tr><td>Teach me</td><td class="wrap">Where people go to learn about saving and investing</td></tr>
+        <tr><td>Know me</td><td class="wrap">Who helps people understand their own situation, and how people see themselves with money</td></tr>
+        <tr><td>Plan with me</td><td class="wrap">Where people go to set goals and make plans, and whether they do at all</td></tr>
+        <tr><td>Guide me</td><td class="wrap">Who or what people use when deciding what to save or invest in</td></tr>
+        <tr><td>Support me</td><td class="wrap">Where people keep track of their savings and investments</td></tr>
+        <tr><td>Coach me</td><td class="wrap">Who helps people review and adjust their plans over time</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>The themes the team raised</h2>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>Theme</th><th>What we want to learn</th></tr></thead>
+      <tbody>
+        <tr><td>Risk and the long term</td><td class="wrap">How people judge risk, and how they think about their money over the long term</td></tr>
+        <tr><td>Retirement and safety</td><td class="wrap">How prepared people are for retirement and for unexpected costs</td></tr>
+        <tr><td>Goals and switching</td><td class="wrap">How goals are set, and what happens when a goal changes</td></tr>
+        <tr><td>Readiness and balance</td><td class="wrap">Whether people can reach their goals while keeping a healthy balance between living now and securing their future</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>OP&rsquo;s strategic questions</h2>
+    <p>These ask how providers act. The benchmark workstream answers the provider side; the survey adds what customers do and expect.</p>
+    <div class="tbl-wrap"><table class="tbl">
+      <thead><tr><th>OP question</th><th>What the survey shows</th></tr></thead>
+      <tbody>
+        <tr><td class="wrap">Building the relationship with the family before the transfer</td><td class="wrap">Whether families talk about passing on wealth, and whether a provider is part of it</td></tr>
+        <tr><td class="wrap">Making the next step visible before the customer leaves</td><td class="wrap">Whether people who moved money elsewhere were offered an alternative first</td></tr>
+        <tr><td class="wrap">Advising on wealth providers don&rsquo;t hold</td><td class="wrap">How people get an overview of all their money</td></tr>
+        <tr><td class="wrap">What AI carries, and where a person stays within reach</td><td class="wrap">Which steps people use AI for, and whether they check with a person before acting</td></tr>
+        <tr><td class="wrap">Serving customers inside assistants providers don&rsquo;t own</td><td class="wrap">How comfortable people are connecting their bank to an assistant like ChatGPT</td></tr>
+        <tr><td class="wrap">Earning from the whole relationship when prices are instantly comparable</td><td class="wrap">What makes people keep most of their money with one provider</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>What we want the survey to surface</h2>
+    <div class="surface-list">
+      <div class="surface-item"><strong>A map of the journey</strong><span>For each of the six steps, how many people use a bank, another platform, AI, an adviser, search and social media, family, or no one.</span></div>
+      <div class="surface-item"><strong>Why people go where they go, and where they want more help</strong><span>The reasons people choose one source over another, and the steps where needs are missed.</span></div>
+      <div class="surface-item"><strong>Needs groups</strong><span>Three to five groups of people defined by how they think about money. We also check whether these groups follow balance levels or cut across them.</span></div>
+      <div class="surface-item"><strong>Long term and readiness</strong><span>What risk means to people, how far ahead they plan, what they know about retirement, what happens when goals change, and how ready they are.</span></div>
+      <div class="surface-item"><strong>Relationship and AI</strong><span>Family conversations about wealth, how people see all their money together, when they check AI answers with a person, and what keeps them with one provider.</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>How the survey works</h2>
+    <div class="facts">
+      <div><b>13&ndash;17 questions</b>most are a single tap</div>
+      <div><b>About 5 minutes</b>up to 6 on mobile</div>
+      <div><b>People in Finland</b>saving or investing</div>
+      <div><b>Anonymous</b>no right or wrong answers</div>
+    </div>
+    <p>Everyone answers the journey questions. Each person then answers one of two short themed modules, chosen at random, so the survey stays short while covering every topic.</p>
+    <div class="flow" aria-label="Survey flow">
+      <div><b>Screener</b>1 question</div><span class="arrow" aria-hidden="true">&rsaquo;</span>
+      <div><b>Journey</b>The six steps and who people turn to</div><span class="arrow" aria-hidden="true">&rsaquo;</span>
+      <div class="split"><b>Module L or R</b>Long term and readiness, or relationship and AI</div><span class="arrow" aria-hidden="true">&rsaquo;</span>
+      <div><b>Closing</b>Readiness, balance, open question</div>
+    </div>
+    <p class="small">Some questions are better answered by other methods: a diary study for goal changes, interviews on risk, usability tests of the app, and the benchmark for how providers act.</p>
+    <button type="button" class="btn primary try" id="tryBtn">Try the survey</button>
+  </section>
+</article>
+
+<main id="survey" hidden>
+  <div class="progress" id="progress" hidden>
+    <div class="progress-text" id="progressText"></div>
+    <div class="track" aria-hidden="true"><div class="fill" id="fill"></div></div>
+  </div>
+  <div class="content" id="content" aria-live="polite"></div>
+  <div class="bottom-nav" id="nav" hidden>
+    <button type="button" class="btn ghost" id="back">Back</button>
+    <button type="button" class="btn primary" id="next">Next</button>
+  </div>
+</main>
+
+<script>
+(function(){
+  function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+  const $ = id => document.getElementById(id);
+  const content=$('content'), nav=$('nav'), next=$('next'), back=$('back');
+  const saver = a => a.S1==='saver';
+  const DK='Don\u2019t know', DR='I don\u2019t remember';
+
+  let flip, providerOpts, knowRows, module, answers, others, pos;
+
+  function setup(){
+    flip = Math.random() < 0.5;
+    const sel = $('modSel').value;
+    module = sel==='random' ? (Math.random()<0.5?'L':'R') : sel;
+    providerOpts = shuffle(['OP','Nordea','Danske Bank','Aktia','S-Bank','Nordnet','Revolut','Trade Republic','A fund company directly (e.g. Seligson)']).map(l=>({v:l,l}));
+    knowRows = shuffle([
+      {id:'a',topic:'Investment decisions',L:'I feel unsure',R:'I feel confident',flippable:true},
+      {id:'b',topic:'Making decisions',L:'I prefer to decide myself',R:'I prefer someone else to decide for me'},
+      {id:'c',topic:'Choosing a provider',L:'Low cost matters most to me',R:'Personal service matters most to me',flippable:true},
+      {id:'d',topic:'Getting advice',L:'I prefer to use digital tools',R:'I prefer to talk to a person'},
+      {id:'e',topic:'Keeping on top of my money',L:'I prefer to contact my provider when I need something',R:'I prefer my provider to contact me with suggestions'},
+      {id:'f',topic:'Bank recommendations',L:'They are mainly in the bank\u2019s interest',R:'They are mainly in my interest',flippable:true},
+      {id:'g',topic:'My money',L:'I focus on enjoying life now',R:'I focus on securing my future'},
+      {id:'h',topic:'Risk',L:'I\u2019d rather avoid losses, even if growth is lower',R:'I accept ups and downs for higher growth',flippable:true}
+    ]);
+    answers = {}; others = {}; pos = -1;
+  }
+
+  const C1sel = a => (a.C1||[]).filter(v=>v!=='dk');
+  const JOURNEY = [
+    {id:'teach',label:'Learning about saving and investing'},
+    {id:'know',label:'Understanding my own situation, such as how much risk suits me'},
+    {id:'plan',label:'Setting goals or making a financial plan'},
+    {id:'guide',label:'Deciding what to save or invest in'},
+    {id:'support',label:'Keeping track of my savings and investments'},
+    {id:'coach',label:'Reviewing or adjusting my plans'}
+  ];
+  function mainName(a){
+    if(a.C2 && !['split','dk'].includes(a.C2)) return a.C2==='other' ? (others['C1.other']||'') : a.C2;
+    const sel=C1sel(a); if(sel.length===1) return sel[0]==='other' ? (others['C1.other']||'') : sel[0];
+    return '';
+  }
+  function mainLabel(a){ const n=mainName(a); return n ? `My main provider (${n})` : 'My main bank or provider'; }
+  const OUTSIDE=['otherprov','ai','adviser','search','family'];
+  const usedOutside = a => Object.values(a.C3||{}).some(arr=>arr.some(v=>OUTSIDE.includes(v)));
+  const usedAI = a => Object.values(a.C3||{}).some(arr=>arr.includes('ai'));
+
+  const Q = [
+    {id:'S1',type:'single',required:true,
+     title:'Do you currently have any investments, such as funds, shares or ETFs?',
+     hint:'This question is needed to show you the right questions.',
+     options:[
+       {v:'yes',l:'Yes'},
+       {v:'saver',l:'No, I only have savings in a bank account'},
+       {v:'none',l:'No, I don\u2019t currently have savings or investments',screenout:true},
+       {v:'pna',l:'Prefer not to answer',screenout:true,optout:true}
+     ]},
+    {id:'C1',type:'multi',
+     title:'Which providers do you currently use for saving or investing?',
+     hint:'Select all that apply.',
+     options:()=>providerOpts.concat([
+       {v:'other',l:'Other',text:'Which provider?',optout:true},
+       {v:'dk',l:DK,exclusive:true,optout:true}
+     ])},
+    {id:'C2',type:'single',show:a=>C1sel(a).length>=2,
+     title:'Which of these holds most of your savings and investments?',
+     options:()=>C1sel(answers).map(v=>({v,l: v==='other' ? (others['C1.other']||'Other provider') : v})).concat([
+       {v:'split',l:'They are split roughly equally',optout:true},
+       {v:'dk',l:DK,optout:true}
+     ])},
+    {id:'C3',type:'matrix',
+     title:'In the past 12 months, who or what did you use for each of these?',
+     hint:'Select all that apply in each row.',
+     rows:()=>JOURNEY.map(r=>({id:r.id,label:r.label})),
+     options:()=>[
+       {v:'main',l:mainLabel(answers)},
+       {v:'otherprov',l:'Another bank or investment platform (e.g. Nordnet, Revolut)'},
+       {v:'ai',l:'An AI chatbot (e.g. ChatGPT, Copilot, Gemini)'},
+       {v:'search',l:'Search, social media or news'},
+       {v:'adviser',l:'An independent financial adviser'},
+       {v:'family',l:'Family or friends'},
+       {v:'self',l:'On my own, without help',exclusive:true},
+       {v:'notdone',l:'I haven\u2019t done this',exclusive:true,optout:true},
+       {v:'dr',l:'Don\u2019t remember',exclusive:true,optout:true}
+     ]},
+    {id:'C4',type:'multi',max:2,show:a=>usedOutside(a),
+     title:'You used help outside your main provider. What were the main reasons?',
+     hint:'Select up to two.',
+     options:[
+       {v:'easier',l:'It was quicker or easier'},
+       {v:'free',l:'It was free'},
+       {v:'independent',l:'It felt more independent'},
+       {v:'notoffered',l:'My main provider doesn\u2019t offer that help'},
+       {v:'didntknow',l:'I didn\u2019t know my main provider offered it'},
+       {v:'second',l:'I wanted a second opinion'},
+       {v:'separate',l:'I prefer to keep things separate'},
+       {v:'other',l:'Other',text:'What was the reason?',optout:true},
+       {v:'dk',l:DK,exclusive:true,optout:true}
+     ]},
+    {id:'C5',type:'scale',
+     title:'For each pair, where would you place yourself?',
+     hint:'Choose a point between the two statements. The middle means somewhere in between.',
+     rows:()=>knowRows, mid:'Somewhere in between', optouts:[{v:'dk',l:DK}], flips:true},
+    {id:'C6',type:'multi',max:2,
+     title:'For which of these would you most like more help?',
+     hint:'Select up to two.',
+     options:()=>JOURNEY.map(r=>({v:r.id,l:r.label})).concat([
+       {v:'none',l:'None, I get the help I need',exclusive:true,optout:true},
+       {v:'dk',l:DK,exclusive:true,optout:true}
+     ])},
+
+    // Module L
+    {id:'L1',mod:'L',type:'single',
+     title:'When you think about risk with your savings and investments, what concerns you most?',
+     options:[
+       {v:'shortloss',l:'Losing money in the short term'},
+       {v:'goal',l:'Not reaching my goal'},
+       {v:'inflation',l:'Inflation reducing what my money is worth'},
+       {v:'access',l:'Not being able to access my money when I need it'},
+       {v:'wrongchoice',l:'Making the wrong choice'},
+       {v:'notthink',l:'I don\u2019t really think about risk',optout:true},
+       {v:'dk',l:DK,optout:true}
+     ]},
+    {id:'L2',mod:'L',type:'single',
+     title:'When you make plans for your money, how far ahead do you usually think?',
+     options:[
+       {v:'months',l:'The next few months'},
+       {v:'1y',l:'About a year'},
+       {v:'2-5',l:'2\u20135 years'},
+       {v:'5-10',l:'5\u201310 years'},
+       {v:'10+',l:'More than 10 years'},
+       {v:'noplan',l:'I don\u2019t really plan ahead',optout:true},
+       {v:'dk',l:DK,optout:true}
+     ]},
+    {id:'L3',mod:'L',type:'single',
+     title:'Do you know approximately how much income you\u2019ll have when you retire?',
+     options:[
+       {v:'checked',l:'Yes, I\u2019ve checked (e.g. my earnings-related pension statement)'},
+       {v:'rough',l:'I have a rough idea'},
+       {v:'no',l:'No'},
+       {v:'retired',l:'I\u2019m already retired',optout:true},
+       {v:'dk',l:DK,optout:true}
+     ]},
+    {id:'L4',mod:'L',type:'single',show:a=>a.S1==='yes',
+     title:'Think about the last time the value of your investments dropped a lot. What did you do?',
+     hint:'Choose the one that fits best.',
+     options:[
+       {v:'sold',l:'I sold some or all of them'},
+       {v:'kept',l:'I kept them as they were'},
+       {v:'bought',l:'I bought more'},
+       {v:'notnotice',l:'I didn\u2019t notice',optout:true},
+       {v:'nothappened',l:'This hasn\u2019t happened to me',optout:true},
+       {v:'dr',l:DR,optout:true}
+     ]},
+    {id:'L5',mod:'L',type:'multi',
+     title:'In the past 2 years, did a financial goal you were saving for change?',
+     hint:'Select all that apply.',
+     options:[
+       {v:'postponed',l:'I postponed it'},
+       {v:'replaced',l:'I replaced it with a different goal'},
+       {v:'used',l:'I used the money for something else, such as an unexpected cost'},
+       {v:'gaveup',l:'I gave it up'},
+       {v:'reached',l:'I reached it'},
+       {v:'nochange',l:'No, it didn\u2019t change',exclusive:true,optout:true},
+       {v:'nogoal',l:'I didn\u2019t have a goal',exclusive:true,optout:true},
+       {v:'dr',l:DR,exclusive:true,optout:true}
+     ]},
+    {id:'L5b',mod:'L',type:'multi',
+     show:a=>(a.L5||[]).some(v=>['postponed','replaced','used','gaveup'].includes(v)),
+     title:'What caused the change?',
+     hint:'Select all that apply.',
+     options:[
+       {v:'life',l:'A life event (e.g. new job, child, moving, separation)'},
+       {v:'prices',l:'Prices or interest rates changed'},
+       {v:'markets',l:'Markets went up or down'},
+       {v:'priorities',l:'My priorities changed'},
+       {v:'expense',l:'An unexpected expense'},
+       {v:'other',l:'Other',text:'What caused it?',optout:true},
+       {v:'dr',l:'Don\u2019t remember',exclusive:true,optout:true}
+     ]},
+
+    // Module R
+    {id:'R1',mod:'R',type:'multi',
+     title:'In the past 2 years, have you talked with family about passing on or inheriting money or property?',
+     hint:'Select all that apply.',
+     options:[
+       {v:'family',l:'Yes, within the family'},
+       {v:'bank',l:'Yes, with a bank or financial adviser involved'},
+       {v:'lawyer',l:'Yes, with a lawyer involved'},
+       {v:'no',l:'No',exclusive:true,optout:true},
+       {v:'pna',l:'Prefer not to answer',exclusive:true,optout:true}
+     ]},
+    {id:'R2',mod:'R',type:'single',
+     title:'How do you usually get an overview of all your savings and investments together?',
+     options:[
+       {v:'oneprovider',l:'One provider shows me everything'},
+       {v:'aggregator',l:'An app that combines my accounts'},
+       {v:'own',l:'My own spreadsheet or notes'},
+       {v:'adviser',l:'An adviser puts it together for me'},
+       {v:'none',l:'I don\u2019t have an overview'},
+       {v:'dk',l:DK,optout:true}
+     ]},
+    {id:'R3',mod:'R',type:'single',show:a=>usedAI(a),
+     title:'The last time you used an AI chatbot for a money question, what did you do with the answer?',
+     options:[
+       {v:'acted',l:'Acted on it without checking'},
+       {v:'person',l:'Checked it with a person before acting'},
+       {v:'source',l:'Checked it with another source before acting'},
+       {v:'noact',l:'Didn\u2019t act on it'},
+       {v:'dr',l:DR,optout:true}
+     ]},
+    {id:'R4',mod:'R',type:'scale',
+     title:'How comfortable would you be connecting your bank information to a general AI assistant, such as ChatGPT, to get personal guidance?',
+     rows:()=>[{id:'a',topic:'Comfort connecting bank information to an AI assistant',L:'Very uncomfortable',R:'Very comfortable',solo:true}],
+     mid:'Neither comfortable nor uncomfortable', optouts:[{v:'dk',l:DK}]},
+    {id:'R5',mod:'R',type:'single',
+     title:'In the past 2 years, have you moved savings or investments from one provider to another?',
+     options:[
+       {v:'yes',l:'Yes'},
+       {v:'no',l:'No'},
+       {v:'dr',l:DR,optout:true}
+     ]},
+    {id:'R5b',mod:'R',type:'single',show:a=>a.R5==='yes',
+     title:'Before you moved, did the provider you were leaving contact you or suggest an alternative?',
+     options:[
+       {v:'kept',l:'Yes, and I kept some money there'},
+       {v:'moved',l:'Yes, but I moved everything anyway'},
+       {v:'no',l:'No'},
+       {v:'dr',l:DR,optout:true}
+     ]},
+    {id:'R6',mod:'R',type:'multi',max:3,
+     title:'Which of these matter to you in keeping most of your money with one provider?',
+     hint:'Select up to three.',
+     options:[
+       {v:'cost',l:'Low overall cost'},
+       {v:'oneplace',l:'Having everything in one place'},
+       {v:'wholeadvice',l:'Advice that takes my whole situation into account'},
+       {v:'loans',l:'Benefits on loans or my mortgage'},
+       {v:'trust',l:'Trust built over time'},
+       {v:'app',l:'An easy-to-use app'},
+       {v:'nothing',l:'Nothing in particular',exclusive:true,optout:true},
+       {v:'dk',l:DK,exclusive:true,optout:true}
+     ]},
+
+    // Closing core
+    {id:'C7',type:'single',
+     title:'Could you cover an unexpected \u20ac2,000 expense from your savings without selling investments or borrowing?',
+     options:[
+       {v:'easily',l:'Yes, easily'},
+       {v:'difficult',l:'Yes, but it would be difficult'},
+       {v:'no',l:'No'},
+       {v:'dk',l:DK,optout:true},
+       {v:'pna',l:'Prefer not to answer',optout:true}
+     ]},
+    {id:'C8',type:'single',
+     note:'This question helps us understand whether people with different financial situations need different kinds of help. You can skip it.',
+     title:'Approximately how much do you have in savings and investments in total, not counting your home?',
+     options:[
+       {v:'<5k',l:'Under \u20ac5,000'},
+       {v:'5-20k',l:'\u20ac5,000\u201319,999'},
+       {v:'20-50k',l:'\u20ac20,000\u201349,999'},
+       {v:'50-100k',l:'\u20ac50,000\u201399,999'},
+       {v:'100-300k',l:'\u20ac100,000\u2013299,999'},
+       {v:'300k-1m',l:'\u20ac300,000\u2013999,999'},
+       {v:'1m+',l:'\u20ac1,000,000 or more'},
+       {v:'dk',l:DK,optout:true},
+       {v:'pna',l:'Prefer not to answer',optout:true}
+     ]},
+    {id:'C9',type:'text',
+     title:'What would make getting help with saving or investing easier for you?',
+     hint:'Optional. Write as much or as little as you like.'}
+  ];
+
+  const optsOf = q => typeof q.options==='function' ? q.options() : q.options;
+  const rowsOf = q => q.rows();
+  const titleOf = q => typeof q.title==='function' ? q.title(answers) : q.title;
+  const visible = q => (!q.mod || q.mod===module) && (!q.show || q.show(answers));
+  const visibleList = () => Q.filter(visible);
+  function esc(s){return String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+  function answered(q){
+    const a=answers[q.id];
+    if(q.type==='single') return !!a;
+    if(q.type==='multi') return Array.isArray(a)&&a.length>0;
+    if(q.type==='scale') return a && Object.keys(a).length>0;
+    if(q.type==='matrix') return a && Object.values(a).some(x=>x.length>0);
+    if(q.type==='text') return !!(a&&a.trim());
+    return false;
+  }
+  function isLast(q){ const v=visibleList(); return v[v.length-1].id===q.id; }
+
+  function setNav(q){
+    back.hidden = (q.id==='S1');
+    if(q.required){ next.disabled=!answered(q); next.textContent='Next'; return; }
+    next.disabled=false;
+    next.textContent = isLast(q) ? (answered(q)?'Submit answers':'Skip and submit') : (answered(q)?'Next':'Skip');
+  }
+
+  function enter(){ content.classList.remove('enter'); void content.offsetWidth; content.classList.add('enter'); }
+
+  function screen(kind){
+    $('progress').hidden=true; nav.hidden=true; enter();
+    if(kind==='intro'){
+      content.innerHTML=`
+        <h1>Getting help with saving and investing</h1>
+        <p class="lead">This short survey is about how people in Finland learn about, plan and manage their savings and investments.</p>
+        <p class="lead">There are no right or wrong answers, and you can skip any question you prefer not to answer. Your answers are anonymous and are used for research only.</p>
+        <p class="meta">About 5 minutes</p>
+        <button type="button" class="btn primary start" id="start">Start survey</button>`;
+      $('start').onclick=()=>{ pos=0; render(); focusTitle(); };
+      return;
+    }
+    const body = kind==='end'
+      ? `<h1>Thank you for your answers</h1><p class="lead">Your answers have been recorded. You can now close this window.</p>`
+      : `<h1>Thank you for your time</h1><p class="lead">This survey is for people who have savings or investments, so there are no more questions for you.</p>`;
+    content.innerHTML = body + `
+      <details><summary>For reviewers: view captured answers</summary>
+      <pre>${esc(JSON.stringify({module, answers, otherText:others, knowPairsLeftRightFlipped:flip},null,2))}</pre></details>`;
+  }
+
+  function render(){
+    const q=Q[pos]; enter();
+    const v=visibleList(); const n=v.indexOf(q)+1;
+    $('progress').hidden=false; nav.hidden=false;
+    $('progressText').textContent=`Question ${n} of ${v.length}`;
+    $('fill').style.width=((n-1)/v.length*100)+'%';
+
+    let html=`<h2 class="qtitle" id="qt" tabindex="-1">${esc(titleOf(q))}</h2>`;
+    if(q.note) html+=`<p class="note">${esc(q.note)}</p>`;
+    if(q.hint) html+=`<p class="hint">${esc(q.hint)}</p>`;
+
+    if(q.type==='single'||q.type==='multi'){
+      const multi=q.type==='multi';
+      const cur=answers[q.id]||(multi?[]:null);
+      html+=`<fieldset><legend style="position:absolute;left:-9999px">${esc(titleOf(q))}</legend><div class="opts">`;
+      optsOf(q).forEach(o=>{
+        const on=multi?cur.includes(o.v):cur===o.v;
+        html+=`<label class="opt${on?' on':''}${o.optout?' optout':''}" data-v="${esc(o.v)}">
+          <input type="${multi?'checkbox':'radio'}" name="${q.id}" value="${esc(o.v)}"${on?' checked':''}>
+          <span class="mark ${multi?'check':'radio'}" aria-hidden="true"></span><span>${esc(o.l)}</span></label>`;
+        if(o.text){
+          html+=`<div class="other-wrap" data-for="${esc(o.v)}"${on?'':' hidden'}>
+            <input class="text-in" type="text" aria-label="${esc(o.text)}" placeholder="${esc(o.text)}" value="${esc(others[q.id+'.'+o.v]||'')}" data-key="${q.id}.${esc(o.v)}"></div>`;
+        }
+      });
+      html+=`</div></fieldset>`;
+      content.innerHTML=html;
+      wireOptions(q);
+    } else if(q.type==='scale'){
+      const cur=answers[q.id]||{};
+      rowsOf(q).forEach(p=>{
+        const flipped=q.flips&&p.flippable&&flip;
+        const L=flipped?p.R:p.L, R=flipped?p.L:p.R;
+        const coded=cur[p.id];
+        const isNum=typeof coded==='number';
+        const shown=isNum?(flipped?6-coded:coded):null;
+        html+=`<fieldset class="pair${p.solo?' solo':''}"><legend>${esc(p.topic)}</legend>
+          <div class="ends" aria-hidden="true"><span>${esc(L)}</span><span>${esc(R)}</span></div>
+          <div class="scale${coded!=null&&!isNum?' dim':''}">`;
+        for(let k=1;k<=5;k++){
+          const lab=k===1?`1, ${L}`:k===5?`5, ${R}`:k===3?`3, ${q.mid}`:`${k}`;
+          html+=`<label class="dot"><input type="radio" name="${q.id}-${p.id}" value="${k}" aria-label="${esc(p.topic+': '+lab)}"${shown===k?' checked':''} data-row="${p.id}" data-flip="${flipped?1:0}"><span></span></label>`;
+        }
+        html+=`</div><div class="below"><span></span><span class="mid">${esc(q.mid)}</span><span class="optouts">`;
+        q.optouts.forEach(o=>{
+          html+=`<button type="button" class="dk" data-row="${p.id}" data-v="${o.v}" aria-pressed="${coded===o.v}">${esc(o.l)}</button>`;
+        });
+        html+=`</span></div></fieldset>`;
+      });
+      content.innerHTML=html;
+      content.querySelectorAll('.dot input').forEach(inp=>{
+        inp.addEventListener('change',()=>{
+          const a=answers[q.id]=answers[q.id]||{};
+          const val=+inp.value; a[inp.dataset.row]=inp.dataset.flip==='1'?6-val:val;
+          const fs=inp.closest('.pair');
+          fs.querySelector('.scale').classList.remove('dim');
+          fs.querySelectorAll('.dk').forEach(b=>b.setAttribute('aria-pressed','false'));
+          setNav(q);
+        });
+      });
+      content.querySelectorAll('.dk').forEach(b=>{
+        b.addEventListener('click',()=>{
+          const a=answers[q.id]=answers[q.id]||{};
+          const fs=b.closest('.pair'); const r=b.dataset.row;
+          if(a[r]===b.dataset.v){ delete a[r]; b.setAttribute('aria-pressed','false'); fs.querySelector('.scale').classList.remove('dim'); }
+          else {
+            a[r]=b.dataset.v;
+            fs.querySelectorAll('.dk').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+            fs.querySelectorAll('input').forEach(x=>x.checked=false);
+            fs.querySelector('.scale').classList.add('dim');
+          }
+          setNav(q);
+        });
+      });
+    } else if(q.type==='matrix'){
+      const cur=answers[q.id]||{}; const opts=optsOf(q);
+      q.rows().forEach(r=>{
+        const sel=cur[r.id]||[];
+        html+=`<fieldset class="mrow"><legend>${esc(r.label)}</legend><div class="chips">`;
+        opts.forEach(o=>{
+          const on=sel.includes(o.v);
+          html+=`<label class="chip${on?' on':''}${o.optout?' optout':''}"><input type="checkbox" data-row="${r.id}" value="${o.v}"${on?' checked':''}>${esc(o.l)}</label>`;
+        });
+        html+=`</div></fieldset>`;
+      });
+      content.innerHTML=html;
+      content.querySelectorAll('.chip input').forEach(inp=>{
+        inp.addEventListener('change',()=>{
+          const all=answers[q.id]=answers[q.id]||{};
+          const o=opts.find(x=>x.v===inp.value); const r=inp.dataset.row;
+          let sel=all[r]||[];
+          if(inp.checked) sel = o.exclusive ? [o.v] : sel.filter(v=>!opts.find(x=>x.v===v).exclusive).concat(o.v);
+          else sel=sel.filter(v=>v!==o.v);
+          all[r]=sel;
+          inp.closest('.chips').querySelectorAll('input').forEach(x=>{ const on=sel.includes(x.value); x.checked=on; x.closest('.chip').classList.toggle('on',on); });
+          setNav(q);
+        });
+      });
+    } else if(q.type==='text'){
+      const cur=answers[q.id]||'';
+      html+=`<label for="ta" style="position:absolute;left:-9999px">${esc(titleOf(q))}</label>
+        <textarea id="ta" class="text-in" maxlength="1000">${esc(cur)}</textarea>
+        <div class="counter" id="ct">${cur.length} / 1000</div>`;
+      content.innerHTML=html;
+      const ta=$('ta');
+      ta.addEventListener('input',()=>{answers[q.id]=ta.value;$('ct').textContent=`${ta.value.length} / 1000`;setNav(q);});
+    }
+    setNav(q);
+  }
+
+  function wireOptions(q){
+    const multi=q.type==='multi'; const opts=optsOf(q);
+    content.querySelectorAll('.opt input').forEach(inp=>{
+      inp.addEventListener('change',()=>{
+        const o=opts.find(x=>x.v===inp.value);
+        if(multi){
+          let cur=answers[q.id]||[];
+          if(inp.checked){
+            if(o.exclusive) cur=[o.v];
+            else {
+              cur=cur.filter(v=>!opts.find(x=>x.v===v).exclusive);
+              if(q.max && cur.length>=q.max){ inp.checked=false; syncOptions(q); return; }
+              cur=cur.concat(o.v);
+            }
+          } else cur=cur.filter(v=>v!==o.v);
+          answers[q.id]=cur;
+        } else answers[q.id]=o.v;
+        syncOptions(q); setNav(q);
+        if(o.text&&inp.checked){ const t=content.querySelector(`.other-wrap[data-for="${CSS.escape(o.v)}"] input`); if(t) t.focus(); }
+      });
+    });
+    content.querySelectorAll('.other-wrap input').forEach(t=>t.addEventListener('input',()=>{others[t.dataset.key]=t.value;}));
+  }
+  function syncOptions(q){
+    const multi=q.type==='multi'; const cur=answers[q.id];
+    content.querySelectorAll('.opt').forEach(lab=>{
+      const v=lab.dataset.v; const on=multi?(cur||[]).includes(v):cur===v;
+      lab.classList.toggle('on',on); lab.querySelector('input').checked=on;
+      const w=content.querySelector(`.other-wrap[data-for="${CSS.escape(v)}"]`); if(w) w.hidden=!on;
+    });
+  }
+  function focusTitle(){ const t=$('qt'); if(t) t.focus(); }
+
+  next.addEventListener('click',()=>{
+    const q=Q[pos];
+    if(q.id==='S1'){ const o=optsOf(q).find(x=>x.v===answers.S1); if(o&&o.screenout){ screen('screenout'); return; } }
+    let k=pos+1; while(k<Q.length && !visible(Q[k])) k++;
+    if(k>=Q.length){ screen('end'); window.scrollTo(0,0); return; }
+    pos=k; render(); window.scrollTo(0,0); focusTitle();
+  });
+  back.addEventListener('click',()=>{
+    let k=pos-1; while(k>=0 && !visible(Q[k])) k--;
+    if(k>=0){ pos=k; render(); window.scrollTo(0,0); focusTitle(); }
+  });
+
+  function restart(){ setup(); screen('intro'); window.scrollTo(0,0); }
+  $('restart').addEventListener('click',restart);
+  $('modSel').addEventListener('change',restart);
+
+  function showView(v){
+    const s = v==='survey';
+    $('brief').hidden=s; $('survey').hidden=!s;
+    $('vBrief').setAttribute('aria-pressed',String(!s));
+    $('vSurvey').setAttribute('aria-pressed',String(s));
+    $('restart').hidden=!s; $('modWrap').hidden=!s;
+    window.scrollTo(0,0);
+  }
+  $('vBrief').addEventListener('click',()=>showView('brief'));
+  $('vSurvey').addEventListener('click',()=>showView('survey'));
+  $('tryBtn').addEventListener('click',()=>showView('survey'));
+
+  restart();
+})();
+</script>
+</body>
+</html>
